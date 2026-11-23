@@ -1,0 +1,144 @@
+criar cliente
+
+INSERT INTO Cliente (nome, email, senha, cpf, telefone, logradouro, numero, complemento, bairro, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+criar vendedor
+INSERT INTO Fornecedor (razao_social, nome_fantasia, cnpj, email, telefone, logradouro, numero, complemento, bairro, cidade,estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+
+buscar cliente 
+
+"SELECT id_cliente, nome, email, senha, cpf, telefone, " +
+                 "logradouro, numero, complemento, bairro, cidade, estado, cep " +
+                 "FROM Cliente WHERE id_cliente = ?"
+
+
+atualizar cliente 
+
+
+"UPDATE Cliente SET nome = ?, email = ?, senha = ?, " +
+             "cpf = ?, telefone = ?, logradouro = ?, numero = ?, " +
+             "complemento = ?, bairro = ?, cidade = ?, estado = ?, cep = ? " +
+             "WHERE id_cliente = ?";
+
+deletar cliente
+"DELETE FROM Cliente WHERE id_cliente = ?";
+
+
+buscar pedido
+"SELECT p.id_pedido, c.nome " +
+             "FROM Pedido p " +
+             "INNER JOIN Cliente c ON p.id_cliente = c.id_cliente " +
+             "WHERE c.id_cliente = ?";
+buscar todos os clientes que tem compras
+
+"SELECT c.id_cliente, c.nome, c.email, "
+               + "COUNT(p.id_pedido) AS qtd_pedidos, "
+               + "SUM(p.valor_total) AS total_gasto "
+               + "FROM Cliente c "
+               + "JOIN Pedido p ON p.id_cliente = c.id_cliente "
+               + "GROUP BY c.id_cliente, c.nome, c.email "
+               + "ORDER BY qtd_pedidos DESC";
+
+busca dados de compras do cliente
+"SELECT c.nome, p.id_pedido, p.data_pedido, p.status, p.valor_total, "
+               + "AVG(p.valor_total) OVER (PARTITION BY c.id_cliente) AS media_por_pedido "
+               + "FROM Cliente c "
+               + "JOIN Pedido p ON p.id_cliente = c.id_cliente "
+               + "WHERE c.id_cliente = ? "
+               + "ORDER BY p.data_pedido DESC";
+
+
+registrar produto
+
+"INSERT INTO Produto (id_fornecedor, nome, descricao, categoria, marca, preco, estoque) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+
+
+atualizar produto
+"UPDATE Produto SET id_fornecedor = ?, nome = ?, descricao = ?, "+ "categoria = ?, marca = ?, preco = ?, estoque = ? "+ "WHERE id_produto = ?";
+
+buscar produto
+
+"SELECT id_produto, id_fornecedor, nome, descricao, categoria, marca, preco, estoque "+ "FROM Produto WHERE id_produto = ?";
+
+buscar produto por categoria
+
+"SELECT id_produto, id_fornecedor, nome, descricao, categoria, marca, preco, estoque "+ "FROM Produto WHERE LOWER(categoria) LIKE ?";
+
+
+deletar produto
+
+"DELETE FROM Produto WHERE id_produto = ?";
+
+
+
+achar clientes com pelo menos um pedido
+
+"SELECT c.id_cliente, c.nome, c.email, "
+               + "COUNT(p.id_pedido) AS qtd_pedidos, "
+               + "SUM(p.valor_total) AS total_gasto "
+               + "FROM Cliente c "
+               + "JOIN Pedido p ON p.id_cliente = c.id_cliente "
+               + "GROUP BY c.id_cliente, c.nome, c.email "
+               + "ORDER BY qtd_pedidos DESC"
+
+produto mais caro e mais barato de cada fornecedor
+SELECT f.nome_fantasia, MAX(p.preco) AS mais_caro, MIN(p.preco) AS mais_barato "
+           + "FROM Fornecedor f "
+           + "JOIN Produto p ON p.id_fornecedor = f.id_fornecedor "
+           + "GROUP BY f.id_fornecedor, f.nome_fantasia
+
+
+quantidade de produtos por categoria
+
+"SELECT categoria, COUNT(*) AS qtd_produtos, AVG(preco) AS preco_medio "
+               + "FROM Produto "
+               + "GROUP BY categoria"
+
+
+buscar pedido do clinte
+
+"SELECT p.id_pedido, c.nome " +
+             "FROM Pedido p " +
+             "INNER JOIN Cliente c ON p.id_cliente = c.id_cliente " +
+             "WHERE c.id_cliente = ?"
+
+buscar vendedor com pelo menos 2 produtos 
+
+"SELECT f.id_fornecedor, f.nome_fantasia " +
+             "FROM Fornecedor f " +
+             "INNER JOIN Produto p ON p.id_fornecedor = f.id_fornecedor " +
+             "GROUP BY f.id_fornecedor, f.nome_fantasia " +
+             "HAVING COUNT(p.id_produto) >= 2"
+
+buscar estoque de um vendedor
+
+"SELECT f.id_fornecedor, p.nome " +
+             "FROM Produto p " +
+             "INNER JOIN Fornecedor f ON p.id_fornecedor = f.id_fornecedor " +
+             "WHERE f.id_fornecedor = ?"
+
+mostra dados de compras do cliente 
+"SELECT c.nome, p.id_pedido, p.data_pedido, p.status, p.valor_total, "
+               + "AVG(p.valor_total) OVER (PARTITION BY c.id_cliente) AS media_por_pedido "
+               + "FROM Cliente c "
+               + "JOIN Pedido p ON p.id_cliente = c.id_cliente "
+               + "WHERE c.id_cliente = ? "
+               + "ORDER BY p.data_pedido DESC"
+
+buscar preço medio dos produtos de uma categoria
+
+"SELECT categoria, COUNT(*) AS qtd_produtos, AVG(preco) AS preco_medio "
+               + "FROM Produto "
+               + "GROUP BY categoria";
+
+adiciona produto ao carrinho 
+SELECT id_produto, id_fornecedor, nome, descricao, categoria, marca, preco, estoque "+ "FROM Produto WHERE LOWER(nome) LIKE ?
+
+criação de pedido
+
+INSERT INTO Pedido (id_cliente,data_pedido,valor_total,status) VALUES (?, GETDATE(), ?, ?)
+
+INSERT INTO Item_Pedido (id_pedido,id_produto,quantidade,preco_unitario) VALUES (?, ?, ?, ?)
+
